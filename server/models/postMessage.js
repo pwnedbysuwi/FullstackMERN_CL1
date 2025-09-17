@@ -1,55 +1,52 @@
 import mongoose from 'mongoose';
 
-// Define the schema for a post message
-const postSchema = mongoose.Schema(
+// Post schema definition
+const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true, // Ensuring the title is always provided
-      trim: true, // Automatically trims whitespace from the title
-      maxlength: 150, // Limiting the length of the title for consistency
+      required: true,
+      trim: true,
+      maxlength: 150, // Title capped at 150 chars
     },
     message: {
       type: String,
-      required: true, // Message is a required field
-      minlength: 10, // Ensuring the message is at least 10 characters long
-      maxlength: 2000, // Limiting the length of the message to avoid too long entries
+      required: true,
+      minlength: 10,
+      maxlength: 2000, // Message between 10–2000 chars
     },
     creator: {
       type: String,
-      required: true, // Creator is a required field
-      trim: true, // Trims any leading or trailing spaces from the creator’s name
+      required: true,
+      trim: true,
     },
     tags: {
       type: [String],
-      default: [], // Default to an empty array if no tags are provided
+      default: [],
       validate: {
-        validator: function (value) {
-          return value.every((tag) => typeof tag === 'string'); // Ensuring all tags are strings
-        },
-        message: 'Each tag must be a string', // Custom validation message
+        validator: (arr) => arr.every((tag) => typeof tag === 'string'),
+        message: 'All tags must be strings',
       },
     },
     selectedFile: {
       type: String,
-      default: '', // Default empty string if no file is uploaded
+      default: '',
     },
     likeCount: {
       type: Number,
-      default: 0, // Default like count is 0
-      min: [0, 'Like count cannot be negative'], // Enforcing a minimum value of 0
+      default: 0,
+      min: [0, 'Likes cannot be negative'],
     },
     createdAt: {
       type: Date,
-      default: Date.now, // Automatically assigns the current date and time as default
+      default: () => Date.now(),
     },
   },
   {
-    timestamps: true, // Automatically creates 'createdAt' and 'updatedAt' fields
+    timestamps: true, // Adds createdAt & updatedAt automatically
   }
 );
 
-// Create and export the PostMessage model
-const PostMessage = mongoose.model('PostMessage', postSchema);
-
-export default PostMessage;
+// Export model
+const Post = mongoose.model('Post', postSchema);
+export default Post;
